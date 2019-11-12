@@ -1222,6 +1222,7 @@ FHoudiniParameterDetails::CreateWidgetInstanceInput( IDetailCategoryBuilder & Lo
         USoundBase::StaticClass(), UParticleSystem::StaticClass(),  USkeletalMesh::StaticClass() };
 
     const int32 FieldCount = InParam.InstanceInputFields.Num();
+	//HOUDINI_LOG_WARNING(TEXT("(Atanvard)InstanceInputFields:%d"), FieldCount);
     for ( int32 FieldIdx = 0; FieldIdx < FieldCount; ++FieldIdx )
     {
         UHoudiniAssetInstanceInputField * HoudiniAssetInstanceInputField = InParam.InstanceInputFields[ FieldIdx ];

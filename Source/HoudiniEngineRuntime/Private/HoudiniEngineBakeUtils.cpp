@@ -1075,7 +1075,9 @@ FHoudiniEngineBakeUtils::ReplaceHoudiniActorWithFoliage( UHoudiniAssetComponent 
 #if WITH_EDITOR
     if ( FHoudiniEngineBakeUtils::BakeHoudiniActorToFoliage(HoudiniAssetComponent) )
     {
-        bSuccess = FHoudiniEngineBakeUtils::DeleteBakedHoudiniAssetActor(HoudiniAssetComponent);
+		//(Atanvard) not delete, to reuse it
+        //bSuccess = FHoudiniEngineBakeUtils::DeleteBakedHoudiniAssetActor(HoudiniAssetComponent);
+		bSuccess = true;
     }
 #endif
 

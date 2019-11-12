@@ -224,7 +224,7 @@ UHoudiniAssetInstanceInputField::PostEditUndo()
 #endif // WITH_EDITOR
 
 void
-UHoudiniAssetInstanceInputField::AddInstanceComponent( int32 VariationIdx )
+UHoudiniAssetInstanceInputField::AddInstanceComponent( int32 VariationIdx ) //(Atanvard)each instance mesh would be used once
 {
     if ( !InstancedObjects.IsValidIndex( VariationIdx ) )
         return;
@@ -272,6 +272,7 @@ UHoudiniAssetInstanceInputField::AddInstanceComponent( int32 VariationIdx )
                 // Check for instance colors
                 HAPI_AttributeInfo AttributeInfo;
                 FHoudiniApi:: AttributeInfo_Init(&AttributeInfo);
+
                 if ( HAPI_RESULT_SUCCESS == FHoudiniApi::GetAttributeInfo(
                     FHoudiniEngine::Get().GetSession(), InstancerHoudiniGeoPartObject.GeoId, InstancerHoudiniGeoPartObject.PartId,
                     HAPI_UNREAL_ATTRIB_INSTANCE_COLOR, HAPI_AttributeOwner::HAPI_ATTROWNER_PRIM, &AttributeInfo))

@@ -301,10 +301,12 @@ FHoudiniEngineScheduler::TaskCookAsset( const FHoudiniEngineTask & Task )
 
     // Initialize last update time.
     double LastUpdateTime = FPlatformTime::Seconds();
-
+	int debugTimes = 0;
+	FString lastCookStateMessage;
     // We need to spin until cooking is finished.
     while ( true )
     {
+		++debugTimes;
         int32 Status = HAPI_STATE_STARTING_COOK;
         HOUDINI_CHECK_ERROR( &Result, FHoudiniApi::GetStatus(
             FHoudiniEngine::Get().GetSession(), HAPI_STATUS_COOK_STATE, &Status ) );
@@ -325,16 +327,16 @@ FHoudiniEngineScheduler::TaskCookAsset( const FHoudiniEngineTask & Task )
             AddResponseMessageTaskInfo(
                 HAPI_RESULT_SUCCESS, EHoudiniEngineTaskType::AssetCooking,
                 EHoudiniEngineTaskState::FinishedCookingWithErrors, AssetId, Task,
-                TEXT( "Finished Cooking with Errors" ) );
+				Status == HAPI_STATE_READY_WITH_FATAL_ERRORS ? TEXT("Finished Cooking with Errors : FATAL_ERROR") :TEXT("Finished Cooking with Errors:COOK_ERROR"));
 
             break;
         }
-
+		//(Atanvard)完整打印輸出
         static const double NotificationUpdateFrequency = 0.5;
-        if ( FPlatformTime::Seconds() - LastUpdateTime >= NotificationUpdateFrequency )
+        //if ( FPlatformTime::Seconds() - LastUpdateTime >= NotificationUpdateFrequency )
         {
             // Reset update time.
-            LastUpdateTime = FPlatformTime::Seconds();
+            //LastUpdateTime = FPlatformTime::Seconds();
 
             // Retrieve status string.
             const FString & CookStateMessage = FHoudiniEngineUtils::GetCookState();
@@ -343,6 +345,12 @@ FHoudiniEngineScheduler::TaskCookAsset( const FHoudiniEngineTask & Task )
                 HAPI_RESULT_SUCCESS, EHoudiniEngineTaskType::AssetCooking,
                 EHoudiniEngineTaskState::Processing, AssetId, Task,
                 CookStateMessage );
+			if (CookStateMessage != lastCookStateMessage) {
+				HOUDINI_LOG_MESSAGE(
+					TEXT("(Atanvard) %d, %s. ")
+					, debugTimes, *CookStateMessage);
+				lastCookStateMessage = CookStateMessage;
+			}
         }
 
         // We want to yield.

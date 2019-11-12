@@ -169,11 +169,11 @@ UHoudiniAssetInstanceInput::CreateInstanceInput()
             &PartInfo ), false );
 
         // Retrieve part name.
-        //FString PartName;
-        //FHoudiniEngineString HoudiniEngineStringPartName( PartInfo.nameSH );
-        //HoudiniEngineStringPartName.ToFString( PartName );
+        FString PartName;
+        FHoudiniEngineString HoudiniEngineStringPartName( PartInfo.nameSH );
+        HoudiniEngineStringPartName.ToFString( PartName );
 
-        //HOUDINI_LOG_MESSAGE( TEXT( "Part Instancer (%s): IPC=%d, IC=%d" ), *PartName, PartInfo.instancedPartCount, PartInfo.instanceCount );
+        HOUDINI_LOG_MESSAGE( TEXT( "Part Instancer (%s): IPC=%d, IC=%d" ), *PartName, PartInfo.instancedPartCount, PartInfo.instanceCount );
 
         // Get transforms for each instance
         TArray<HAPI_Transform> InstancerPartTransforms;
@@ -194,6 +194,7 @@ UHoudiniAssetInstanceInput::CreateInstanceInput()
 
         for ( auto InstancedPartId : InstancedPartIds )
         {
+			HOUDINI_LOG_WARNING(TEXT("(Atanvard)InstancedPartId: %d"), InstancedPartId);
             HAPI_PartInfo InstancedPartInfo;
             HOUDINI_CHECK_ERROR_RETURN(
                 FHoudiniApi::GetPartInfo(
@@ -743,12 +744,18 @@ FString UHoudiniAssetInstanceInput::GetFieldLabel( int32 FieldIdx, int32 Variati
     {
         // If the packed prim itself has a cutsom name, use it
         // else, use the instancer's custom name
-        if ( Field->GetHoudiniGeoPartObject().HasCustomName() )
-            FieldNameText = Field->GetHoudiniGeoPartObject().PartName;
-        else if( HoudiniGeoPartObject.HasCustomName() )
-            FieldNameText = HoudiniGeoPartObject.PartName;
-        else
-            FieldNameText = Field->GetHoudiniGeoPartObject().GetNodePath();
+		if (Field->GetHoudiniGeoPartObject().HasCustomName()) {
+			FieldNameText = Field->GetHoudiniGeoPartObject().PartName;
+			//HOUDINI_LOG_WARNING(TEXT("(Atanvard) FieldName1: %s"), *FieldNameText);
+		}
+		else if (HoudiniGeoPartObject.HasCustomName()) {
+			FieldNameText = HoudiniGeoPartObject.PartName;
+			//HOUDINI_LOG_WARNING(TEXT("(Atanvard) FieldName2: %s"), *FieldNameText);
+		}
+		else {
+			FieldNameText = Field->GetHoudiniGeoPartObject().GetNodePath();
+			//HOUDINI_LOG_WARNING(TEXT("(Atanvard) FieldName3: %s"), *FieldNameText);
+		}
     }
     else if ( Flags.bAttributeInstancerOverride )
     {
